@@ -1,0 +1,135 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Traveler {
+  id            String          @id @default(uuid())
+  email         String          @unique
+  fullName      String          @map("full_name")
+  company       String?
+  department    String?
+  dateOfBirth   DateTime?       @map("date_of_birth") @db.Date
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+  
+  bookings      Booking[]
+  profile       TravelProfile?
+  consents      ConsentRecord[]
+  
+  @@map("travelers")
+}
+
+model Booking {
+  id               String           @id @default(uuid())
+  travelerId       String           @map("traveler_id")
+  bookingReference String?          @map("booking_reference")
+  status           BookingStatus
+  sourceEmailId    String?          @map("source_email_id")
+  rawEmailContent  String?          @map("raw_email_content") @db.Text
+  totalCost        Decimal?         @map("total_cost") @db.Decimal(10, 2)
+  currency         String?
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+  
+  traveler         Traveler         @relation(fields: [travelerId], references: [id], onDelete: Cascade)
+  segments         FlightSegment[]
+  
+  @@unique([bookingReference, travelerId])
+  @@index([travelerId])
+  @@index([createdAt(sort: Desc)])
+  @@map("bookings")
+}
+
+model FlightSegment {
+  id                String          @id @default(uuid())
+  bookingId         String          @map("booking_id")
+  airlineCode       String?         @map("airline_code")
+  flightNumber      String?
+  origin            String
+  destination        String
+  departureDatetime DateTime        @map("departure_datetime") @db.Timestamptz
+  arrivalDatetime   DateTime        @map("arrival_datetime") @db.Timestamptz
+  cabinClass        CabinClass?     @map("cabin_class")
+  seatNumber        String?         @map("seat_number")
+  price             Decimal?        @db.Decimal(10, 2)
+  status            String?
+  createdAt         DateTime        @default(now()) @map("created_at")
+  
+  booking           Booking         @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  
+  @@index([bookingId])
+  @@index([departureDatetime])
+  @@map("flight_segments")
+}
+
+model TravelProfile {
+  id                  String          @id @default(uuid())
+  travelerId          String          @unique @map("traveler_id")
+  travelFrequency     String?         @map("travel_frequency")
+  spendTier           String?         @map("spend_tier")
+  avgBookingLeadTime  Int?            @map("avg_booking_lead_time")
+  preferredAirlines   Json            @default("[]") @map("preferred_airlines")
+  preferredHotels     Json            @default("[]") @map("preferred_hotels")
+  commonRoutes        Json            @default("[]") @map("common_routes")
+  loyaltyPrograms     Json            @default("{}") @map("loyalty_programs")
+  totalTrips          Int             @default(0) @map("total_trips")
+  ytdSpend            Decimal?        @default(0) @map("ytd_spend") @db.Decimal(10, 2)
+  lastTripDate        DateTime?       @map("last_trip_date") @db.Date
+  updatedAt           DateTime        @updatedAt @map("updated_at")
+  
+  traveler            Traveler        @relation(fields: [travelerId], references: [id], onDelete: Cascade)
+  
+  @@map("travel_profiles")
+}
+
+model EmailQueue {
+  id              String            @id @default(uuid())
+  emailId         String            @unique @map("email_id")
+  travelerEmail   String?           @map("traveler_email")
+  subject         String?           @db.Text
+  sender          String?
+  receivedDate    DateTime?         @map("received_date")
+  processingStatus String           @default("PENDING") @map("processing_status")
+  processedAt     DateTime?         @map("processed_at")
+  errorMessage    String?           @map("error_message") @db.Text
+  createdAt       DateTime          @default(now()) @map("created_at")
+  
+  @@index([processingStatus])
+  @@map("email_queue")
+}
+
+model ConsentRecord {
+  id          String          @id @default(uuid())
+  travelerId  String          @map("traveler_id")
+  purpose     String
+  grantedAt   DateTime        @default(now()) @map("granted_at")
+  expiresAt   DateTime?       @map("expires_at")
+  revokedAt   DateTime?       @map("revoked_at")
+  ipAddress   String?         @map("ip_address")
+  userAgent   String?         @map("user_agent") @db.Text
+  
+  traveler    Traveler        @relation(fields: [travelerId], references: [id], onDelete: Cascade)
+  
+  @@map("consent_records")
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  FAILED
+}
+
+enum CabinClass {
+  ECONOMY
+  PREMIUM_ECONOMY
+  BUSINESS
+  FIRST
+}

@@ -1,0 +1,96 @@
+{
+  "flights": [
+    {
+      "id": "18a1b2c3d4e5f6",
+      "type": "flight",
+      "subject": "Flight Confirmation - AA1234 New York to Los Angeles",
+      "from": "reservations@aa.com",
+      "date": "2024-12-01T10:30:00Z",
+      "raw": "Your flight is confirmed...",
+      "bookingDetails": {
+        "confirmationNumber": "ABC123",
+        "flightNumber": "AA1234",
+        "airline": "American Airlines",
+        "route": ["JFK", "LAX"],
+        "date": "2024-12-15",
+        "price": "450.00"
+      }
+    },
+    {
+      "id": "18a1b2c3d4e5f7",
+      "type": "flight",
+      "subject": "Your Emirates Booking Confirmation EK202",
+      "from": "noreply@emirates.com",
+      "date": "2024-11-28T14:20:00Z",
+      "raw": "Dear Passenger, Your booking is confirmed...",
+      "bookingDetails": {
+        "confirmationNumber": "EK9876XY",
+        "flightNumber": "EK202",
+        "airline": "Emirates",
+        "route": ["DXB", "LHR"],
+        "date": "2024-12-20",
+        "price": "1250.00"
+      }
+    }
+  ],
+  "hotels": [
+    {
+      "id": "28b1c2d3e4f5g6",
+      "type": "hotel",
+      "subject": "Booking Confirmation - Hilton Garden Inn",
+      "from": "reservations@hilton.com",
+      "date": "2024-11-30T09:15:00Z",
+      "raw": "Thank you for your reservation...",
+      "bookingDetails": {
+        "confirmationNumber": "HLT456789",
+        "hotelName": "Hilton Garden Inn Downtown",
+        "location": "New York, NY",
+        "checkIn": "2024-12-15",
+        "checkOut": "2024-12-18",
+        "price": "450.00"
+      }
+    },
+    {
+      "id": "28b1c2d3e4f5g7",
+      "type": "hotel",
+      "subject": "Your Booking.com Reservation #987654321",
+      "from": "noreply@booking.com",
+      "date": "2024-11-25T16:45:00Z",
+      "raw": "Your reservation at Hotel Grand Plaza...",
+      "bookingDetails": {
+        "confirmationNumber": "BKG987654",
+        "hotelName": "Hotel Grand Plaza",
+        "location": "London, UK",
+        "checkIn": "2024-12-20",
+        "checkOut": "2024-12-23",
+        "price": "675.00"
+      }
+    }
+  ],
+  "trains": [
+    {
+      "id": "38c1d2e3f4g5h6",
+      "type": "train",
+      "subject": "Your Train Ticket - Train #12345",
+      "from": "noreply@irctc.co.in",
+      "date": "2024-11-20T11:00:00Z",
+      "raw": "Your train ticket has been confirmed...",
+      "bookingDetails": {
+        "confirmationNumber": "PNR1234567890",
+        "trainNumber": "12345",
+        "route": "Mumbai to Delhi",
+        "date": "2024-12-10",
+        "price": "1500.00"
+      }
+    }
+  ],
+  "unparsed": [
+    {
+      "id": "48d1e2f3g4h5i6",
+      "subject": "Your Car Rental Confirmation",
+      "from": "hertz@rentals.com",
+      "date": "2024-11-18T08:30:00Z"
+    }
+  ]
+}
+
