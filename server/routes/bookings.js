@@ -8,26 +8,59 @@ const bookingParser = require('../services/bookingParser');
 const emailExtractor = require('../services/emailExtractor');
 const prisma = require('../config/database');
 
-// Middleware to check authentication
+// Middleware to check authentication from token
 const requireAuth = (req, res, next) => {
-  if (!req.session.provider) {
-    return res.status(401).json({ error: 'Not authenticated' });
+  const authToken = req.headers['x-auth-token'];
+  
+  if (!authToken) {
+    return res.status(401).json({ 
+      error: 'Not authenticated',
+      message: 'Please log in again'
+    });
   }
-  next();
+
+  try {
+    const authData = JSON.parse(Buffer.from(authToken, 'base64').toString());
+    
+    // Validate auth data structure
+    if (!authData.provider || !authData.tokens || !authData.email) {
+      return res.status(401).json({ 
+        error: 'Invalid authentication token',
+        message: 'Please log in again'
+      });
+    }
+    
+    // Attach auth data to request
+    req.authData = authData;
+    next();
+  } catch (error) {
+    console.error('Error parsing auth token:', error);
+    return res.status(401).json({ 
+      error: 'Invalid authentication token',
+      message: 'Please log in again'
+    });
+  }
 };
 
 // Fetch and parse bookings
+
 router.get('/fetch', requireAuth, async (req, res) => {
   try {
     let emails = [];
+    const { provider, tokens, email: userEmail } = req.authData;
 
-    if (req.session.provider === 'gmail') {
-      emails = await gmailService.getBookingEmails(req.session.gmailTokens);
-    } else if (req.session.provider === 'outlook') {
-      emails = await outlookService.getBookingEmails(req.session.outlookTokens.accessToken);
+    if (provider === 'gmail') {
+      const result = await gmailService.getBookingEmails(tokens);
+      emails = result.emails || result; // Handle both old and new format
+      console.log(`Fetched ${emails.length} emails, ${result} total`);
+      // write all emails to a file
+      await fs.writeFile('emails.json', JSON.stringify(emails, null, 2));
+    } else if (provider === 'outlook') {
+      emails = await outlookService.getBookingEmails(tokens.accessToken);
     }
-
-    const parsedBookings = bookingParser.parseMultipleEmails(emails);
+    const parseResult = bookingParser.parseMultipleEmails(emails);
+    const parsedBookings = parseResult.bookings;
+    const parseStats = parseResult.stats;
     
     // Save to JSON file (legacy support)
     const dataDir = path.join(__dirname, '../../data');
@@ -38,10 +71,10 @@ router.get('/fetch', requireAuth, async (req, res) => {
     }
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const filename = `bookings_${req.session.userEmail}_${timestamp}.json`;
+    const filename = `bookings_${userEmail}_${timestamp}.json`;
     const filepath = path.join(dataDir, filename);
 
-    await fs.writeFile(filepath, JSON.stringify(parsedBookings, null, 2));
+    await fs.writeFile(filepath, JSON.stringify(parseResult, null, 2));
 
     // Process emails through memory layer (async via queue)
     const memoryResults = {
@@ -55,7 +88,7 @@ router.get('/fetch', requireAuth, async (req, res) => {
       try {
         await emailExtractor.processEmailWithQueue({
           ...email,
-          from: email.from || req.session.userEmail,
+          from: email.from || userEmail,
         });
         memoryResults.processed++;
       } catch (error) {
@@ -81,7 +114,12 @@ router.get('/fetch', requireAuth, async (req, res) => {
         flights: parsedBookings.flights.length,
         hotels: parsedBookings.hotels.length,
         trains: parsedBookings.trains.length,
-        unparsed: parsedBookings.unparsed.length
+        buses: parsedBookings.buses.length,
+        cabs: parsedBookings.cabs.length,
+        rentals: parsedBookings.rentals.length,
+        events: parsedBookings.events.length,
+        unparsed: parsedBookings.unparsed.length,
+        parseStats: parseStats
       }
     });
   } catch (error) {
@@ -96,11 +134,12 @@ router.get('/fetch', requireAuth, async (req, res) => {
 // Get saved bookings list
 router.get('/saved', requireAuth, async (req, res) => {
   try {
+    const { email: userEmail } = req.authData;
     const dataDir = path.join(__dirname, '../../data');
     const files = await fs.readdir(dataDir);
     
     const userFiles = files.filter(f => 
-      f.startsWith(`bookings_${req.session.userEmail}`) && f.endsWith('.json')
+      f.startsWith(`bookings_${userEmail}`) && f.endsWith('.json')
     );
 
     const fileDetails = await Promise.all(
@@ -126,9 +165,10 @@ router.get('/saved', requireAuth, async (req, res) => {
 router.get('/saved/:filename', requireAuth, async (req, res) => {
   try {
     const { filename } = req.params;
+    const { email: userEmail } = req.authData;
     
     // Security check - only allow access to user's own files
-    if (!filename.startsWith(`bookings_${req.session.userEmail}`)) {
+    if (!filename.startsWith(`bookings_${userEmail}`)) {
       return res.status(403).json({ error: 'Access denied' });
     }
 

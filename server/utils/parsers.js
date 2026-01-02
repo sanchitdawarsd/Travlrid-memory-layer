@@ -13,16 +13,24 @@ const extractTextFromHtml = (html) => {
   // Try to get text from body, or fallback to all text
   let text = $('body').text() || $.text();
   
-  // Clean up whitespace
-  text = text.replace(/\s+/g, ' ').trim();
+  // Clean up whitespace - replace multiple spaces/tabs with single space
+  // Replace multiple newlines with single newline, then trim
+  text = text
+    .replace(/[ \t]+/g, ' ')  // Multiple spaces/tabs to single space
+    .replace(/\n\s*\n/g, '\n') // Multiple newlines to single newline
+    .trim();
   
   return text;
 };
 
 const extractPlainText = (emailBody) => {
   if (typeof emailBody === 'string') {
+    // Check if it contains HTML tags (more comprehensive check)
+    // This regex matches any HTML tag like <div>, <meta>, <table>, etc.
+    const hasHtmlTags = /<[a-z][\s\S]*>/i.test(emailBody);
+    
     // If it's already plain text, return as is
-    if (!emailBody.includes('<html') && !emailBody.includes('<!DOCTYPE')) {
+    if (!hasHtmlTags) {
       return emailBody.trim();
     }
     

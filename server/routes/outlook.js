@@ -25,33 +25,34 @@ router.get('/callback', async (req, res) => {
     const authResult = await outlookService.getTokens(code);
     const userInfo = await outlookService.getUserInfo(authResult.accessToken);
 
-    req.session.outlookTokens = authResult;
-    req.session.userEmail = userInfo.mail || userInfo.userPrincipalName;
-    req.session.provider = 'outlook';
+    // Create auth data object
+    const authData = {
+      provider: 'outlook',
+      email: userInfo.mail || userInfo.userPrincipalName,
+      tokens: authResult
+    };
 
-    res.redirect(`${process.env.CLIENT_URL}?success=true&provider=outlook`);
+    // Encode the auth data as base64
+    const encodedAuth = Buffer.from(JSON.stringify(authData)).toString('base64');
+    
+    // Redirect with auth token
+    res.redirect(`${process.env.CLIENT_URL}?auth=${encodedAuth}&provider=outlook`);
   } catch (error) {
     console.error('Outlook callback error:', error);
     res.redirect(`${process.env.CLIENT_URL}?error=auth_failed`);
   }
 });
 
-// Check authentication status
+// Check authentication status (for backward compatibility)
 router.get('/status', (req, res) => {
-  if (req.session.outlookTokens && req.session.provider === 'outlook') {
-    res.json({
-      authenticated: true,
-      email: req.session.userEmail,
-      provider: 'outlook'
-    });
-  } else {
-    res.json({ authenticated: false });
-  }
+  // Token-based auth doesn't need server-side status check
+  // Client checks localStorage instead
+  res.json({ authenticated: false });
 });
 
-// Logout
+// Logout (for backward compatibility)
 router.post('/logout', (req, res) => {
-  req.session.destroy();
+  // Token-based auth - logout is handled client-side
   res.json({ success: true });
 });
 
