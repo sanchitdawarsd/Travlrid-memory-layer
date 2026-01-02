@@ -1,0 +1,194 @@
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.login-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 480px;
+  width: 100%;
+  overflow: hidden;
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 40px 30px;
+  text-align: center;
+}
+
+.icon-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.travel-icon {
+  width: 60px;
+  height: 60px;
+  color: white;
+}
+
+.login-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 16px;
+  opacity: 0.95;
+  font-weight: 400;
+}
+
+.login-content {
+  padding: 40px 30px;
+}
+
+.features {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 35px;
+  padding: 20px 0;
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.feature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.feature-icon {
+  font-size: 32px;
+}
+
+.feature span:last-child {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+.login-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.login-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.login-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.login-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.login-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.button-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.gmail-button {
+  background: #EA4335;
+  color: white;
+}
+
+.gmail-button:hover:not(:disabled) {
+  background: #d33426;
+}
+
+.outlook-button {
+  background: #0078D4;
+  color: white;
+}
+
+.outlook-button:hover:not(:disabled) {
+  background: #006abc;
+}
+
+.privacy-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: #f5f5f5;
+  border-radius: 10px;
+  border-left: 4px solid #667eea;
+}
+
+.privacy-icon {
+  width: 24px;
+  height: 24px;
+  color: #667eea;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.privacy-notice p {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.5;
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .login-card {
+    margin: 0;
+  }
+  
+  .login-header h1 {
+    font-size: 24px;
+  }
+  
+  .features {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .feature {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+

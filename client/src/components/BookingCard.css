@@ -1,0 +1,137 @@
+.booking-card {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.booking-card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px);
+}
+
+.booking-header {
+  padding: 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.booking-info {
+  flex: 1;
+}
+
+.booking-subject {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.booking-from {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.booking-date {
+  font-size: 12px;
+  color: #999;
+}
+
+.expand-button {
+  background: #f5f5f5;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.expand-button:hover {
+  background: #e0e0e0;
+}
+
+.expand-icon {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.3s ease;
+}
+
+.expand-icon.rotated {
+  transform: rotate(180deg);
+}
+
+.booking-details {
+  padding: 0 20px 20px 20px;
+  border-top: 1px solid #f0f0f0;
+  animation: expandDown 0.3s ease-out;
+}
+
+@keyframes expandDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 500px;
+  }
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  font-size: 13px;
+  color: #666;
+  font-weight: 600;
+}
+
+.detail-value {
+  font-size: 13px;
+  color: #333;
+  text-align: right;
+  max-width: 60%;
+  word-break: break-word;
+}
+
+.no-details {
+  padding: 20px 0 10px 0;
+  color: #999;
+  font-size: 13px;
+  text-align: center;
+  font-style: italic;
+}
+
+@media (max-width: 600px) {
+  .detail-row {
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .detail-value {
+    text-align: left;
+    max-width: 100%;
+  }
+}
+
