@@ -823,7 +823,6 @@ class BookingParser {
   extractBookingDetails(text, bookingType, email) {
     const patterns = this.patterns[bookingType];
     const details = {};
-
     Object.keys(patterns).forEach(key => {
       if (key === 'keywords' || key === 'negativeKeywords') return;
 
